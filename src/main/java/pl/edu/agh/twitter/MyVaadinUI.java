@@ -2,15 +2,17 @@ package pl.edu.agh.twitter;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -24,17 +26,24 @@ public class MyVaadinUI extends UI
 
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
-        setContent(layout);
+    	
+        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("C:\\Users\\as\\Desktop\\studia\\TAI\\Projekt\\VaadinProject\\src\\main\\resources\\shiro.ini");
+    	
+        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+    	SecurityUtils.setSecurityManager(securityManager);
+    	
+		final Navigator navigator = new Navigator(this, this);
+		setNavigator(navigator);
+		
+		navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
+		navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
+		
+		Subject currentUser = SecurityUtils.getSubject();
         
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
-            }
-        });
-        layout.addComponent(button);
+		final String viewName = currentUser.isAuthenticated()
+				? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
+
+		navigator.navigateTo(viewName);
     }
 
 }
