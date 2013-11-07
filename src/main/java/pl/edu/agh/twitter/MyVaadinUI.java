@@ -1,6 +1,14 @@
 package pl.edu.agh.twitter;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+
 import javax.servlet.annotation.WebServlet;
+
+import twitter4j.Status;
+import twitter4j.TwitterException;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -28,10 +36,30 @@ public class MyVaadinUI extends UI
         layout.setMargin(true);
         setContent(layout);
         
-        Button button = new Button("Click Me");
+        Button button = new Button("Show tweets from last 4 hours");
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
+                /*layout.addComponent(new Label("Thank you for clicking"));
+                try {
+					List<String> statusy = MyTwitterFun.doSomething();
+					for(String s : statusy) {
+						layout.addComponent(new Label(s));
+					}
+				} catch (TwitterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+            	SortedSet<Status>statusesSet = TwitterUtil.getProperJoinedTimeline();
+            	SortedSet<Status>headSet = statusesSet; //for use within while
+            	Status last = statusesSet.last();
+            	Calendar calendar = Calendar.getInstance();
+            	calendar.add(Calendar.HOUR_OF_DAY, -4);
+            	Date fourHoursAgo = calendar.getTime();
+            	while(last != null && last.getCreatedAt().after(fourHoursAgo)) {
+            		layout.addComponent(new Label(last.getUser().getName() + " (" + last.getCreatedAt().toString() + "):" + last.getText()));
+            		headSet = headSet.headSet(last);
+            		last = headSet.last();
+            	}
             }
         });
         layout.addComponent(button);
