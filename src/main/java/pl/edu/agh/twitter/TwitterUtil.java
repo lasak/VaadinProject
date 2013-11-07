@@ -25,7 +25,7 @@ public class TwitterUtil {
 	/**
 	 * newest statuses (with biggest date) should be the biggest
 	 */
-	private static Comparator<Status> statusComparator = new Comparator<Status>() {
+	private static Comparator<Status> statusTimeComparator = new Comparator<Status>() {
 
 		@Override
 		public int compare(Status o1, Status o2) {
@@ -58,7 +58,7 @@ public class TwitterUtil {
 		SortedSet<Status> friendTweets = getFriendTweets();
 		SortedSet<Status> myTweets = getMyTweets();
 		if (friendTweets != null && myTweets != null) {
-			SortedSet<Status> allTweets = new TreeSet<Status>(statusComparator);
+			SortedSet<Status> allTweets = new TreeSet<Status>(statusTimeComparator);
 			allTweets.addAll(friendTweets);
 			allTweets.addAll(myTweets);
 			return allTweets;
@@ -71,13 +71,12 @@ public class TwitterUtil {
 		try {
 			statuses = twitter.getHomeTimeline();
 			SortedSet<Status> sortedStatusSet = new TreeSet<Status>(
-					statusComparator);
+					statusTimeComparator);
 			for (Status status : statuses) {
 				sortedStatusSet.add(status);
 			}
 			return sortedStatusSet;
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -88,7 +87,7 @@ public class TwitterUtil {
 		try {
 			List<Long> ids = getFriends();
 			SortedSet<Status> sortedStatusSet = new TreeSet<Status>(
-					statusComparator);
+					statusTimeComparator);
 			for (Long id : ids) {
 				ResponseList<Status> statusesList = twitter.getUserTimeline(id);
 				for (Status status : statusesList) {
