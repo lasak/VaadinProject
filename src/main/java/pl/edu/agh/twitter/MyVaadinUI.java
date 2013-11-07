@@ -27,7 +27,9 @@ public class MyVaadinUI extends UI
     @Override
     protected void init(VaadinRequest request) {
     	
-        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("C:\\Users\\as\\Desktop\\studia\\TAI\\Projekt\\VaadinProject\\src\\main\\resources\\shiro.ini");
+    	System.out.println(System.getProperty("user.dir"));
+    	
+        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory(".\\src\\main\\resources\\shiro.ini");
     	
         org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
     	SecurityUtils.setSecurityManager(securityManager);
