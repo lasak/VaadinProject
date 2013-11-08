@@ -1,5 +1,12 @@
 package pl.edu.agh.twitter;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.shiro.SecurityUtils;
@@ -15,6 +22,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+
 @Theme("mytheme")
 @SuppressWarnings("serial")
 public class MyVaadinUI extends UI {
@@ -25,28 +33,61 @@ public class MyVaadinUI extends UI {
 	public static class Servlet extends VaadinServlet {
 	}
 
+	
+	static String convertStreamToString(java.io.InputStream is) {
+	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+	    return s.hasNext() ? s.next() : "";
+	}
 
 
+
+	/**
+	 * getResource... to jedyny formalnie poprawny sposób pobierania plików leżących w WebInfie. Zwykły getResource nie chciał zadziałać
+	 * getResourceStream zadziałał. Niestety IniSecurityManagerFactory chce jedynie skonfigurowany Ini albo ścieżkę do pliku której
+	 *  formalnie nie mogę mu dać. Przy odrobinie szczęścia workaround poniżej nie jest herezją - podczas inicjalizacji tworzę 
+	 * plik tymczasowy do którego przepisuję shiro i usuwam go zaraz po wykorzystaniu. Nie powinno tworzyć dziury w 
+	 * bezpieczeństwie na moje oko, no i działa (choć obniża wydajność deploya).
+	 */
     @Override
     protected void init(VaadinRequest request) {
-    	
-        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("C:\\Users\\as\\Desktop\\studia\\TAI\\Projekt\\VaadinProject\\src\\main\\resources\\shiro.ini");
-    	
-        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
-    	SecurityUtils.setSecurityManager(securityManager);
-    	
-		final Navigator navigator = new Navigator(this, this);
-		setNavigator(navigator);
+    	InputStream shiroInputStream = VaadinServlet.getCurrent()
+				    .getServletContext().getResourceAsStream("/WEB-INF/classes/shiro.ini");
+    	File file = new File("tmp");
+    	try {
+			file.createNewFile();
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(convertStreamToString(shiroInputStream));
+			bw.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory(file.getAbsolutePath());
 		
-		navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
-		navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
-		
-		Subject currentUser = SecurityUtils.getSubject();
-        
-		final String viewName = currentUser.isAuthenticated()
-				? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
+		  org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+		  file.delete(); //important - delete AFTER factory.getInstance(), otherwise fun happens
+			SecurityUtils.setSecurityManager(securityManager);
+			
+			final Navigator navigator = new Navigator(this, this);
+			setNavigator(navigator);
+			
+			navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
+			navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
+			
+			Subject currentUser = SecurityUtils.getSubject();
+		    
+			final String viewName = currentUser.isAuthenticated()
+					? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
 
-		navigator.navigateTo(viewName);
+			navigator.navigateTo(viewName);
+    	
+    	
+      
+
     }
 
 }
