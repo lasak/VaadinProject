@@ -1,22 +1,17 @@
 package pl.edu.agh.twitter;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-
 import javax.servlet.annotation.WebServlet;
 
-import twitter4j.Status;
-import twitter4j.TwitterException;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -30,38 +25,28 @@ public class MyVaadinUI extends UI {
 	public static class Servlet extends VaadinServlet {
 	}
 
-	@Override
-	protected void init(VaadinRequest request) {
-		layout.setMargin(true);
-		setContent(layout);
 
-		Button button = new Button("Show tweets from last 4 hours");
-		button.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				showLast4HoursOfTweets();
 
-			}
-		});
-		layout.addComponent(button);
-	}
+    @Override
+    protected void init(VaadinRequest request) {
+    	
+        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("C:\\Users\\as\\Desktop\\studia\\TAI\\Projekt\\VaadinProject\\src\\main\\resources\\shiro.ini");
+    	
+        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+    	SecurityUtils.setSecurityManager(securityManager);
+    	
+		final Navigator navigator = new Navigator(this, this);
+		setNavigator(navigator);
+		
+		navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
+		navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
+		
+		Subject currentUser = SecurityUtils.getSubject();
+        
+		final String viewName = currentUser.isAuthenticated()
+				? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
 
-	private void showLast4HoursOfTweets() {
-		SortedSet<Status> statusesSet = TwitterUtil.getProperJoinedTimeline();
-		SortedSet<Status> headSet = statusesSet; // for use within while
-		Status last = statusesSet.last();
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.HOUR_OF_DAY, -4);
-		Date fourHoursAgo = calendar.getTime();
-
-		while (last != null && last.getCreatedAt().after(fourHoursAgo)) {
-			String tweet = last.getUser().getName() + " ("
-					+ last.getCreatedAt().toString() + "):" + last.getText();
-			layout.addComponent(new Label(tweet));
-			headSet = headSet.headSet(last);
-			last = headSet.last();
-		}
-
-	}
+		navigator.navigateTo(viewName);
+    }
 
 }
