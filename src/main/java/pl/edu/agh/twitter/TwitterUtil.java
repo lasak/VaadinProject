@@ -43,9 +43,9 @@ public class TwitterUtil {
 				.setOAuthConsumerSecret(
 						"c9wqs3it25ZIL4be9aRFekbp3xR2uptFLVhs10Q67o")
 				.setOAuthAccessToken(
-						"2180587321-H7DYHIRrlUJEGq9ueZrmUFiN3QInL6QPzm8rlVO")
+						"2180587321-ODN7s9mZY6VylifdeySxlAYDMLyDm0Ooe4eqDVy")
 				.setOAuthAccessTokenSecret(
-						"j9agoMg1cQV2r7HT27QEag2COFUo1QAAOZX0NPslzWiyT");
+						"D3gvCYGR0nKWUmSkhJnqvAZu2FjKFTpUJR1CnppQvn2qs");
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
 	}
