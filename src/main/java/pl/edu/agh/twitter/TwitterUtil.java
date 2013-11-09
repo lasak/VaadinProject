@@ -1,21 +1,17 @@
 package pl.edu.agh.twitter;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import twitter4j.IDs;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtil {
@@ -23,18 +19,18 @@ public class TwitterUtil {
 	private static Twitter twitter;
 
 	/**
-	 * newest statuses (with biggest date) should be the biggest
+	 * we always want first the newest statuses (with biggest date)
 	 */
 	private static Comparator<Status> statusTimeComparator = new Comparator<Status>() {
 
 		@Override
 		public int compare(Status o1, Status o2) {
 			if (o1.getCreatedAt().before(o2.getCreatedAt())) {
-				return -1;
+				return 1;
 			} else if (o1.getCreatedAt().equals(o2.getCreatedAt())) {
 				return 0;
 			} else {
-				return 1;
+				return -1;
 			}
 
 		}
@@ -101,6 +97,24 @@ public class TwitterUtil {
 		}
 
 	}
+	
+	static public List<User> searchUsers(String query) {
+		try {
+			return twitter.searchUsers(query, 1);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	static public User follow(User user) {
+		try {
+			return twitter.createFriendship(user.getId());
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	static private List<Long> getFriends() throws TwitterException {
 		long[] l = twitter.getFriendsIDs(-1).getIDs();
@@ -110,5 +124,7 @@ public class TwitterUtil {
 		}
 		return friendsIDs;
 	}
+	
+
 
 }

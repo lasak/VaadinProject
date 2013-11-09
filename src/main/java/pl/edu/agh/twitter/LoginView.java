@@ -17,6 +17,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -26,7 +27,7 @@ public class LoginView extends VerticalLayout implements View{
         public static final String LOGIN_VIEW_NAME = "login";
         
         private TextField loginTextField = new TextField();
-        private TextField passwordTextField = new TextField();
+        private PasswordField passwordTextField = new PasswordField();
         private Label loginLabel = new Label("Login:");
         private Label passwordLabel = new Label("Hasło:");
         private Button button = new Button("Zaloguj");
@@ -38,6 +39,8 @@ public class LoginView extends VerticalLayout implements View{
                 mainLayout.addComponent(passwordLabel);
                 mainLayout.addComponent(passwordTextField);
                 mainLayout.addComponent(button);
+                
+                loginTextField.focus();
                 
                 mainLayout.setSizeFull();
                 mainLayout.setSpacing(true);

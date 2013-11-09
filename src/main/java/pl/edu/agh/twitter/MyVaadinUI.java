@@ -70,20 +70,20 @@ public class MyVaadinUI extends UI {
                 
                  org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
                  file.delete(); //important - delete AFTER factory.getInstance(), otherwise fun happens
-                        SecurityUtils.setSecurityManager(securityManager);
-                        
-                        final Navigator navigator = new Navigator(this, this);
-                        setNavigator(navigator);
-                        
-                        navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
-                        navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
-                        
-                        Subject currentUser = SecurityUtils.getSubject();
+                SecurityUtils.setSecurityManager(securityManager);
                 
-                        final String viewName = currentUser.isAuthenticated()
-                                        ? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
+                final Navigator navigator = new Navigator(this, this);
+                setNavigator(navigator);
+                
+                navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
+                navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
+                
+                Subject currentUser = SecurityUtils.getSubject();
+        
+                final String viewName = currentUser.isAuthenticated()
+                                ? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
 
-                        navigator.navigateTo(viewName);
+                navigator.navigateTo(viewName);
             
             
       
