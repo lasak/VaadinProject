@@ -40,36 +40,10 @@ public class MyVaadinUI extends UI {
         }
 
 
-
-        /**
-         * getResource... to jedyny formalnie poprawny sposób pobierania plików leżących w WebInfie. Zwykły getResource nie chciał zadziałać
-         * getResourceStream zadziałał. Niestety IniSecurityManagerFactory chce jedynie skonfigurowany Ini albo ścieżkę do pliku której
-         * formalnie nie mogę mu dać. Przy odrobinie szczęścia workaround poniżej nie jest herezją - podczas inicjalizacji tworzę
-         * plik tymczasowy do którego przepisuję shiro i usuwam go zaraz po wykorzystaniu. Nie powinno tworzyć dziury w
-         * bezpieczeństwie na moje oko, no i działa (choć obniża wydajność deploya).
-         */
     @Override
     protected void init(VaadinRequest request) {
-            InputStream shiroInputStream = VaadinServlet.getCurrent()
-                                 .getServletContext().getResourceAsStream("/WEB-INF/classes/shiro.ini");
-            File file = new File("tmp");
-            try {
-                        file.createNewFile();
-                        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                        BufferedWriter bw = new BufferedWriter(fw);
-                        bw.write(convertStreamToString(shiroInputStream));
-                        bw.close();
-                } catch (FileNotFoundException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                }
-                Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory(file.getAbsolutePath());
-                
-                 org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
-                 file.delete(); //important - delete AFTER factory.getInstance(), otherwise fun happens
+                Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");                
+                org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
                 SecurityUtils.setSecurityManager(securityManager);
                 
                 final Navigator navigator = new Navigator(this, this);
