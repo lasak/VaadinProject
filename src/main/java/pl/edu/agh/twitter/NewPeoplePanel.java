@@ -39,6 +39,7 @@ public class NewPeoplePanel extends Panel {
 		userTable.addContainerProperty("Nazwa", Label.class, null);
 		userTable.addContainerProperty("Opis", String.class, null);
 		userTable.setSizeFull();
+		userTable.setPageLength(0);
 		userTable.setVisible(false);
 		
 		userTable.setSelectable(true);
@@ -109,6 +110,7 @@ public class NewPeoplePanel extends Panel {
 					else {
 						Notification.show("Nie udało się", Type.ERROR_MESSAGE);
 					}
+					textField.setValue("");
 				}
 				
 			}
