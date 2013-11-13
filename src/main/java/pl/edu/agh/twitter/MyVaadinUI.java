@@ -30,7 +30,8 @@ public class MyVaadinUI extends UI {
         }
 
         
-        static String convertStreamToString(java.io.InputStream is) {
+        @SuppressWarnings("resource")
+		static String convertStreamToString(java.io.InputStream is) {
          java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
          return s.hasNext() ? s.next() : "";
         }

@@ -1,27 +1,29 @@
 package pl.edu.agh.twitter.view;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.SortedSet;
-
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-
-import pl.edu.agh.twitter.model.Model;
-
-import twitter4j.Status;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
+
+import controller.ApplicationController;
 
 public class ApplicationView extends VerticalLayout implements View{
+	
+	public static final String ODSWIEZ_BUTTON_CAPTION = "Odśwież";
+	public static final String ZALOGUJ_BUTTON_CAPTION = "Zaloguj";
+	public static final String WYLOGUJ_BUTTON_CAPTION = "Wyloguj";
+	public static final String SZUKAJ_BUTTON_CAPTION = "Szukaj";
+	public static final String OBSERWUJ_BUTTON_CAPTION = "Obserwuj";
+	public static final String WYSLIJ_BUTTON_CAPTION = "Wyślij";
+	
+	private ApplicationController controller;
         
         public static final String APPLICATION_VIEW_NAME = "application";
         private VerticalLayout layout = new VerticalLayout();
@@ -31,9 +33,9 @@ public class ApplicationView extends VerticalLayout implements View{
         private NewTweetPanel newTweetPanel;
         private FriendsPanel friendsPanel;
         private Label brakUprawnienLabel = new Label("Brak uprawnień");
-        private Button wylogujButton = new Button("Wyloguj");
-        private Button zalogujButton = new Button("Zaloguj");
-    	private Button refreshButton = new Button("Odśwież");
+        private Button wylogujButton = new Button(WYLOGUJ_BUTTON_CAPTION);
+        private Button zalogujButton = new Button(ZALOGUJ_BUTTON_CAPTION);
+    	private Button refreshButton = new Button(ODSWIEZ_BUTTON_CAPTION);
 
         @Override
         public void enter(ViewChangeEvent event) {
@@ -42,6 +44,7 @@ public class ApplicationView extends VerticalLayout implements View{
         }
         
         public ApplicationView() {
+        	controller = new ApplicationController(this);
                 layout.setMargin(true);
                 layout.setSpacing(true);
                 addComponent(layout);
@@ -51,7 +54,14 @@ public class ApplicationView extends VerticalLayout implements View{
 
         }
         
-        private void completeLayout() {
+        private void addListenerToButtons() {
+			wylogujButton.addClickListener(controller);
+			zalogujButton.addClickListener(controller);
+			refreshButton.addClickListener(controller);
+			
+		}
+
+		private void completeLayout() {
         	layout.removeAllComponents();
         	
         	HorizontalLayout upperLayout = new HorizontalLayout();
@@ -88,11 +98,11 @@ public class ApplicationView extends VerticalLayout implements View{
 	            upperLayout.addComponent(friendsPanel);
         	}
         	if (SecurityUtils.getSubject().isPermitted("add_tweet"))  {
-	            newTweetPanel = new NewTweetPanel();
+	            newTweetPanel = new NewTweetPanel(controller);
 	            bottomLayout.addComponent(newTweetPanel);
         	}
         	if (SecurityUtils.getSubject().isPermitted("add_new_friends")) {
-        		newPeoplePanel = new NewFriendsPanel();
+        		newPeoplePanel = new NewFriendsPanel(controller);
         		bottomLayout.addComponent(newPeoplePanel);
         	}
         	
@@ -102,38 +112,34 @@ public class ApplicationView extends VerticalLayout implements View{
 			
 		}
         
-        private void addListenerToButtons() {
-        	wylogujButton.addClickListener(new ClickListener() {
-				
-				@Override
-				public void buttonClick(ClickEvent event) {
-					Subject currentUser = SecurityUtils.getSubject();
-					currentUser.logout();
-					getUI().getNavigator().navigateTo(LoginView.LOGIN_VIEW_NAME);
-				}
-			});
-        	
-        	zalogujButton.addClickListener(new ClickListener() {
-				
-				@Override
-				public void buttonClick(ClickEvent event) {
-					getUI().getNavigator().navigateTo(LoginView.LOGIN_VIEW_NAME);
-					
-				}
-			});
-        	
-        	refreshButton.addClickListener(new ClickListener() {
-    			
-    			@Override
-    			public void buttonClick(ClickEvent event) {
-    				friendTweetsPanel.refreshTable();
-    				friendsPanel.refreshTable();
-    				
-    			}
-    		});
+        
+        public void odswiez() {
+        	friendTweetsPanel.refreshTable();
+			friendsPanel.refreshTable();
+        }
+        
+        public void nieWpisanoWartosci() {
+        	Notification.show("Nie wpisano wartości", Type.ERROR_MESSAGE);
         }
 
-		private void showLast4HoursOfTweets() {
+
+		public TweetsPanel getFriendTweetsPanel() {
+			return friendTweetsPanel;
+		}
+
+		public NewFriendsPanel getNewPeoplePanel() {
+			return newPeoplePanel;
+		}
+
+		public NewTweetPanel getNewTweetPanel() {
+			return newTweetPanel;
+		}
+
+		public FriendsPanel getFriendsPanel() {
+			return friendsPanel;
+		}
+
+		/*private void showLast4HoursOfTweets() {
                 SortedSet<Status> statusesSet = Model.getInstance().getProperJoinedTimeline();
                 SortedSet<Status> headSet = statusesSet; // for use within while
                 Status last = statusesSet.last();
@@ -149,6 +155,6 @@ public class ApplicationView extends VerticalLayout implements View{
                         headSet = headSet.headSet(last);
                         last = headSet.last();
                 }
-        }
+        }*/
 
 }
