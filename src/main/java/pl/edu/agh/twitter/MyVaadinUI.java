@@ -1,18 +1,14 @@
 package pl.edu.agh.twitter;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
+
+import pl.edu.agh.twitter.view.ApplicationView;
+import pl.edu.agh.twitter.view.LoginView;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -42,25 +38,22 @@ public class MyVaadinUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-                Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");                
-                org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
-                SecurityUtils.setSecurityManager(securityManager);
-                
-                final Navigator navigator = new Navigator(this, this);
-                setNavigator(navigator);
-                
-                navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
-                navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
-                
-                Subject currentUser = SecurityUtils.getSubject();
+        Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");                
+        org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+        SecurityUtils.setSecurityManager(securityManager);
         
-                final String viewName = currentUser.isAuthenticated()
-                                ? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
+        final Navigator navigator = new Navigator(this, this);
+        setNavigator(navigator);
+        
+        navigator.addView(LoginView.LOGIN_VIEW_NAME, LoginView.class);
+        navigator.addView(ApplicationView.APPLICATION_VIEW_NAME, ApplicationView.class);
+        
+        Subject currentUser = SecurityUtils.getSubject();
 
-                navigator.navigateTo(viewName);
-            
-            
-      
+        final String viewName = currentUser.isAuthenticated()
+                        ? ApplicationView.APPLICATION_VIEW_NAME: LoginView.LOGIN_VIEW_NAME;
+
+        navigator.navigateTo(viewName);
 
     }
 

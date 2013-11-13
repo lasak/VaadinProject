@@ -1,4 +1,4 @@
-package pl.edu.agh.twitter;
+package pl.edu.agh.twitter.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,14 +14,15 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class TwitterUtil {
+public class Model {
 
-	private static Twitter twitter;
+	private Twitter twitter;
+	private static Model model;
 
 	/**
 	 * we always want first the newest statuses (with biggest date)
 	 */
-	private static Comparator<Status> statusTimeComparator = new Comparator<Status>() {
+	private Comparator<Status> statusTimeComparator = new Comparator<Status>() {
 
 		@Override
 		public int compare(Status o1, Status o2) {
@@ -36,7 +37,7 @@ public class TwitterUtil {
 		}
 	};
 
-	static {
+	{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 				.setOAuthConsumerKey("xbh7939LQO1TmiTfCIiL1w")
@@ -49,10 +50,17 @@ public class TwitterUtil {
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
 	}
+	
+	public static Model getInstance() {
+		if (model == null) {
+			model = new Model();
+		}
+		return model;
+	}
 
-	static public SortedSet<Status> getProperJoinedTimeline() {
+	public SortedSet<Status> getProperJoinedTimeline() {
 		SortedSet<Status> friendTweets = getFriendTweets();
-		SortedSet<Status> myTweets = getMyTweets();
+		SortedSet<Status> myTweets = getTweets();
 		if (friendTweets != null && myTweets != null) {
 			SortedSet<Status> allTweets = new TreeSet<Status>(statusTimeComparator);
 			allTweets.addAll(friendTweets);
@@ -62,7 +70,7 @@ public class TwitterUtil {
 		return null;
 	}
 
-	static public SortedSet<Status> getMyTweets() {
+	public SortedSet<Status> getTweets() {
 		ResponseList<Status> statuses;
 		try {
 			statuses = twitter.getHomeTimeline();
@@ -79,9 +87,11 @@ public class TwitterUtil {
 
 	}
 
-	static public SortedSet<Status> getFriendTweets() {
+	
+	// Not used
+	public SortedSet<Status> getFriendTweets() {
 		try {
-			List<Long> ids = getFriends();
+			List<Long> ids = getFriendsIds();
 			SortedSet<Status> sortedStatusSet = new TreeSet<Status>(
 					statusTimeComparator);
 			for (Long id : ids) {
@@ -98,7 +108,7 @@ public class TwitterUtil {
 
 	}
 	
-	static public List<User> searchUsers(String query) {
+	public List<User> searchUsers(String query) {
 		try {
 			return twitter.searchUsers(query, 1);
 		} catch (TwitterException e) {
@@ -107,7 +117,7 @@ public class TwitterUtil {
 		}
 	}
 	
-	static public User follow(User user) {
+	public User follow(User user) {
 		try {
 			return twitter.createFriendship(user.getId());
 		} catch (TwitterException e) {
@@ -115,8 +125,28 @@ public class TwitterUtil {
 			return null;
 		}
 	}
+	
+	public List<User> getFriends() {
+		List<User> users= new ArrayList<User>();
+		try {
+			for (Long id : getFriendsIds()) {
+				users.add(twitter.showUser(id));
+			}
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
+	
+	public void sendATweet(String text) {
+		try {
+			twitter.updateStatus(text);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
 
-	static private List<Long> getFriends() throws TwitterException {
+	private List<Long> getFriendsIds() throws TwitterException {
 		long[] l = twitter.getFriendsIDs(-1).getIDs();
 		List<Long> friendsIDs = new ArrayList<Long>();
 		for (int i = 0; i < l.length; i++) {

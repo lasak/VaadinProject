@@ -1,6 +1,8 @@
-package pl.edu.agh.twitter;
+package pl.edu.agh.twitter.view;
 
 import java.util.List;
+
+import pl.edu.agh.twitter.model.Model;
 
 import twitter4j.User;
 
@@ -18,7 +20,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
-public class NewPeoplePanel extends Panel {
+public class NewFriendsPanel extends Panel {
 	
 	private TextField textField = new TextField();
 	private Button searchButton = new Button("Szukaj");
@@ -26,7 +28,7 @@ public class NewPeoplePanel extends Panel {
 	private Table userTable = new Table();
 	private List<User> users;
 	
-	public NewPeoplePanel() {
+	public NewFriendsPanel() {
 		initTable();
 		initLayouts();
 		addListeners();
@@ -37,7 +39,7 @@ public class NewPeoplePanel extends Panel {
 	private void initTable() {
 		userTable = new Table();
 		userTable.addContainerProperty("Nazwa", Label.class, null);
-		userTable.addContainerProperty("Opis", String.class, null);
+		userTable.addContainerProperty("Opis", Label.class, null);
 		userTable.setSizeFull();
 		userTable.setPageLength(0);
 		userTable.setVisible(false);
@@ -50,8 +52,6 @@ public class NewPeoplePanel extends Panel {
 
 	private void initLayouts() {
 		setCaption("Nowe osoby");
-		
-		userTable.setSizeFull();
 		
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout upperLayout = new HorizontalLayout();
@@ -87,8 +87,9 @@ public class NewPeoplePanel extends Panel {
 					Notification.show("Nie wpisano wartości", Type.ERROR_MESSAGE);
 				}
 				else {
-					users = TwitterUtil.searchUsers(text.trim());
+					users = Model.getInstance().searchUsers(text.trim());
 					completeTable();
+					textField.setValue("");
 				}
 				
 			}
@@ -104,7 +105,7 @@ public class NewPeoplePanel extends Panel {
 				}
 				else {
 					User user = (User) object;
-					if (TwitterUtil.follow(user) != null) {
+					if (Model.getInstance().follow(user) != null) {
 						Notification.show("Obserwujesz: " + user.getName());
 					}
 					else {
@@ -127,7 +128,10 @@ public class NewPeoplePanel extends Panel {
 			label.setContentMode(ContentMode.HTML);
 			label.setValue("<b>" + user.getName() + "</b>" + " @" + user.getScreenName());
 			
-			userTable.addItem(new Object[] {label, user.getDescription()}, user);
+			Label opisLabel = new Label(user.getDescription());
+			opisLabel.setContentMode(ContentMode.HTML);
+			
+			userTable.addItem(new Object[] {label, opisLabel}, user);
 		}
 		
 	}

@@ -1,4 +1,4 @@
-package pl.edu.agh.twitter;
+package pl.edu.agh.twitter.view;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -7,6 +7,8 @@ import java.util.SortedSet;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
+import pl.edu.agh.twitter.model.Model;
+
 import twitter4j.Status;
 
 import com.vaadin.navigator.View;
@@ -14,6 +16,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -23,11 +26,14 @@ public class ApplicationView extends VerticalLayout implements View{
         public static final String APPLICATION_VIEW_NAME = "application";
         private VerticalLayout layout = new VerticalLayout();
         
-        private FriendsTweetsPanel friendTweetsPanel;
-        private NewPeoplePanel newPeoplePanel;
+        private TweetsPanel friendTweetsPanel;
+        private NewFriendsPanel newPeoplePanel;
+        private NewTweetPanel newTweetPanel;
+        private FriendsPanel friendsPanel;
         private Label brakUprawnienLabel = new Label("Brak uprawnień");
         private Button wylogujButton = new Button("Wyloguj");
         private Button zalogujButton = new Button("Zaloguj");
+    	private Button refreshButton = new Button("Odśwież");
 
         @Override
         public void enter(ViewChangeEvent event) {
@@ -48,10 +54,23 @@ public class ApplicationView extends VerticalLayout implements View{
         private void completeLayout() {
         	layout.removeAllComponents();
         	
-        	if (SecurityUtils.getSubject().isPermitted("display_twits") 
+        	HorizontalLayout upperLayout = new HorizontalLayout();
+        	HorizontalLayout bottomLayout = new HorizontalLayout();
+        	
+        	upperLayout.setSpacing(true);
+        	bottomLayout.setSpacing(true);
+        	upperLayout.setSizeFull();
+        	bottomLayout.setSizeFull();
+        	
+        	
+        	if (SecurityUtils.getSubject().isPermitted("display_tweets") 
+        			|| SecurityUtils.getSubject().isPermitted("display_friends")
+        			|| SecurityUtils.getSubject().isPermitted("add_tweet")
         			|| SecurityUtils.getSubject().isPermitted("add_new_friends")) {
         		layout.addComponent(wylogujButton);
         		layout.setComponentAlignment(wylogujButton, Alignment.TOP_RIGHT);
+        		layout.addComponent(refreshButton);
+        		layout.setComponentAlignment(refreshButton, Alignment.TOP_LEFT);
         		
         	}
            	else {
@@ -60,14 +79,25 @@ public class ApplicationView extends VerticalLayout implements View{
         		layout.setComponentAlignment(zalogujButton, Alignment.TOP_RIGHT);
         	}
         	
-        	if (SecurityUtils.getSubject().isPermitted("display_twits"))  {
-	            friendTweetsPanel = new FriendsTweetsPanel();
-	            layout.addComponent(friendTweetsPanel);
+        	if (SecurityUtils.getSubject().isPermitted("display_tweets"))  {
+	            friendTweetsPanel = new TweetsPanel();
+	            upperLayout.addComponent(friendTweetsPanel);
+        	}
+        	if (SecurityUtils.getSubject().isPermitted("display_friends"))  {
+	            friendsPanel = new FriendsPanel();
+	            upperLayout.addComponent(friendsPanel);
+        	}
+        	if (SecurityUtils.getSubject().isPermitted("add_tweet"))  {
+	            newTweetPanel = new NewTweetPanel();
+	            bottomLayout.addComponent(newTweetPanel);
         	}
         	if (SecurityUtils.getSubject().isPermitted("add_new_friends")) {
-        		newPeoplePanel = new NewPeoplePanel();
-        		layout.addComponent(newPeoplePanel);
+        		newPeoplePanel = new NewFriendsPanel();
+        		bottomLayout.addComponent(newPeoplePanel);
         	}
+        	
+        	layout.addComponent(upperLayout);
+        	layout.addComponent(bottomLayout);
  
 			
 		}
@@ -91,10 +121,20 @@ public class ApplicationView extends VerticalLayout implements View{
 					
 				}
 			});
+        	
+        	refreshButton.addClickListener(new ClickListener() {
+    			
+    			@Override
+    			public void buttonClick(ClickEvent event) {
+    				friendTweetsPanel.refreshTable();
+    				friendsPanel.refreshTable();
+    				
+    			}
+    		});
         }
 
 		private void showLast4HoursOfTweets() {
-                SortedSet<Status> statusesSet = TwitterUtil.getProperJoinedTimeline();
+                SortedSet<Status> statusesSet = Model.getInstance().getProperJoinedTimeline();
                 SortedSet<Status> headSet = statusesSet; // for use within while
                 Status last = statusesSet.last();
 
