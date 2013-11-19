@@ -30,6 +30,9 @@ public class FriendsPanel extends Panel{
 		refreshTable();
 	}
 	
+	/**
+	 * Refreshes content of friends table.
+	 */
 	public void refreshTable() {
 		users = Model.getInstance().getFriends();
 		

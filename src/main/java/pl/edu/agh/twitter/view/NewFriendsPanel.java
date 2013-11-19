@@ -2,6 +2,8 @@ package pl.edu.agh.twitter.view;
 
 import java.util.List;
 
+import pl.edu.agh.twitter.controller.ApplicationController;
+
 import twitter4j.User;
 
 import com.vaadin.shared.ui.label.ContentMode;
@@ -16,7 +18,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import controller.ApplicationController;
 
 public class NewFriendsPanel extends Panel {
 	
@@ -35,8 +36,6 @@ public class NewFriendsPanel extends Panel {
 		addListeners();
 	}
 
-
-
 	private void initTable() {
 		userTable = new Table();
 		userTable.addContainerProperty("Nazwa", Label.class, null);
@@ -48,8 +47,6 @@ public class NewFriendsPanel extends Panel {
 		userTable.setSelectable(true);
 		userTable.setMultiSelect(false);
 	}
-
-
 
 	private void initLayouts() {
 		setCaption("Nowe osoby");
@@ -78,29 +75,51 @@ public class NewFriendsPanel extends Panel {
 		setContent(mainLayout);
 	}
 	
+	/**
+	 * Return the text entered to the text field
+	 * @return value of the text field
+	 */
 	public String getTextFieldValue() {
 		return textField.getValue();
 	}
 	
+	/**
+	 * Shows found users
+	 * @param foundUsers 
+	 */
 	public void znaleziono(List<User> foundUsers) {
 		users = foundUsers;
 		completeTable();
 		textField.setValue("");
 	}
 	
+	/**
+	 * Shows error not chosen user notification
+	 */
 	public void nieWybranoOsoby() {
 		Notification.show("Nie wybrano osoby", Type.ERROR_MESSAGE);
 	}
 	
+	/**
+	 * Returns chosen user
+	 * @return chosen user
+	 */
 	public Object getWybranaOsoba() {
 		return userTable.getValue();
 	}
 	
+	/**
+	 * Shows adding new friend success notification
+	 * @param nazwa
+	 */
 	public void obserwujesz(String nazwa) {
 		Notification.show("Obserwujesz: " + nazwa);
 		textField.setValue("");
 	}
 	
+	/**
+	 * Shows adding new friend failure notification
+	 */
 	public void nieUdaloSie() {
 		Notification.show("Nie udało się", Type.ERROR_MESSAGE);
 		textField.setValue("");

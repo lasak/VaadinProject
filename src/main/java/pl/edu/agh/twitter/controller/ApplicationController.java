@@ -1,4 +1,4 @@
-package controller;
+package pl.edu.agh.twitter.controller;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -14,6 +14,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
+/**
+ * 
+ * Controller connected with application main view. Implements ClickListener. 
+ * Handles all requests
+ *
+ */
 public class ApplicationController implements ClickListener{
 	
 	private ApplicationView applicationView;
@@ -22,6 +28,9 @@ public class ApplicationController implements ClickListener{
 		this.applicationView = applicationView;
 	}
 
+	/**
+	 * Handles button requests
+	 */
 	@Override
 	public void buttonClick(ClickEvent event) {
 		Button button = event.getButton();

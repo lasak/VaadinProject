@@ -18,7 +18,11 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-
+/**
+ * 
+ * Main UI class
+ *
+ */
 @Theme("mytheme")
 @SuppressWarnings("serial")
 public class MyVaadinUI extends UI {

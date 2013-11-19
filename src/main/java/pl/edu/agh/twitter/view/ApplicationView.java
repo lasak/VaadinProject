@@ -2,6 +2,8 @@ package pl.edu.agh.twitter.view;
 
 import org.apache.shiro.SecurityUtils;
 
+import pl.edu.agh.twitter.controller.ApplicationController;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -12,8 +14,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 
-import controller.ApplicationController;
-
+/**
+ * 
+ * Main application view
+ *
+ */
 public class ApplicationView extends VerticalLayout implements View{
 	
 	public static final String ODSWIEZ_BUTTON_CAPTION = "Odśwież";
@@ -28,7 +33,7 @@ public class ApplicationView extends VerticalLayout implements View{
         public static final String APPLICATION_VIEW_NAME = "application";
         private VerticalLayout layout = new VerticalLayout();
         
-        private TweetsPanel friendTweetsPanel;
+        private TweetsPanel tweetsPanel;
         private NewFriendsPanel newPeoplePanel;
         private NewTweetPanel newTweetPanel;
         private FriendsPanel friendsPanel;
@@ -39,7 +44,6 @@ public class ApplicationView extends VerticalLayout implements View{
 
         @Override
         public void enter(ViewChangeEvent event) {
-                // TODO Auto-generated method stub
                 
         }
         
@@ -90,8 +94,8 @@ public class ApplicationView extends VerticalLayout implements View{
         	}
         	
         	if (SecurityUtils.getSubject().isPermitted("display_tweets"))  {
-	            friendTweetsPanel = new TweetsPanel();
-	            upperLayout.addComponent(friendTweetsPanel);
+	            tweetsPanel = new TweetsPanel();
+	            upperLayout.addComponent(tweetsPanel);
         	}
         	if (SecurityUtils.getSubject().isPermitted("display_friends"))  {
 	            friendsPanel = new FriendsPanel();
@@ -112,49 +116,52 @@ public class ApplicationView extends VerticalLayout implements View{
 			
 		}
         
-        
+        /**
+         * Refreshes all components.
+         */
         public void odswiez() {
-        	friendTweetsPanel.refreshTable();
+        	tweetsPanel.refreshTable();
 			friendsPanel.refreshTable();
         }
         
+        /**
+         * Shows empty value error notification
+         */
         public void nieWpisanoWartosci() {
         	Notification.show("Nie wpisano wartości", Type.ERROR_MESSAGE);
         }
 
-
-		public TweetsPanel getFriendTweetsPanel() {
-			return friendTweetsPanel;
+        /**
+         * Returns panel with time line
+         * @return tweets panel
+         */
+		public TweetsPanel getTweetsPanel() {
+			return tweetsPanel;
 		}
 
+        /**
+         * Returns panel to add new friends
+         * @return new friends panel
+         */
 		public NewFriendsPanel getNewPeoplePanel() {
 			return newPeoplePanel;
 		}
 
+        /**
+         * Returns panel to add new tweet
+         * @return new tweet panel
+         */
 		public NewTweetPanel getNewTweetPanel() {
 			return newTweetPanel;
 		}
 
+        /**
+         * Returns panel with friends
+         * @return friends panel
+         */
 		public FriendsPanel getFriendsPanel() {
 			return friendsPanel;
 		}
 
-		/*private void showLast4HoursOfTweets() {
-                SortedSet<Status> statusesSet = Model.getInstance().getProperJoinedTimeline();
-                SortedSet<Status> headSet = statusesSet; // for use within while
-                Status last = statusesSet.last();
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.HOUR_OF_DAY, -4);
-                Date fourHoursAgo = calendar.getTime();
-
-                while (last != null && last.getCreatedAt().after(fourHoursAgo)) {
-                        String tweet = last.getUser().getName() + " ("
-                                        + last.getCreatedAt().toString() + "):" + last.getText();
-                        layout.addComponent(new Label(tweet));
-                        headSet = headSet.headSet(last);
-                        last = headSet.last();
-                }
-        }*/
 
 }

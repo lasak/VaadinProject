@@ -1,5 +1,7 @@
 package pl.edu.agh.twitter.view;
 
+import pl.edu.agh.twitter.controller.ApplicationController;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -7,7 +9,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 
-import controller.ApplicationController;
 
 public class NewTweetPanel extends Panel{
 	
@@ -36,10 +37,17 @@ public class NewTweetPanel extends Panel{
 		
 	}
 	
+	/**
+	 * Return the text entered to the text field
+	 * @return value of the text field
+	 */
 	public String getTextFieldValue() {
 		return textField.getValue();
 	}
 	
+	/**
+	 * Informs user about successful sending of tweet
+	 */
 	public void wyslano() {
 		Notification.show("Wysłano");
 		textField.setValue("");

@@ -14,14 +14,17 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
+/**
+ * 
+ * Model class responsible for connecting to Twitter and communication with it.
+ *
+ */
 public class Model {
 
 	private Twitter twitter;
 	private static Model model;
 
-	/**
-	 * we always want first the newest statuses (with biggest date)
-	 */
+	// we always want first the newest statuses (with biggest date)
 	private Comparator<Status> statusTimeComparator = new Comparator<Status>() {
 
 		@Override
@@ -51,6 +54,10 @@ public class Model {
 		twitter = tf.getInstance();
 	}
 	
+	/**
+	 * Returns the single instance of {@code Model}
+	 * @return instance of model
+	 */
 	public static Model getInstance() {
 		if (model == null) {
 			model = new Model();
@@ -58,18 +65,10 @@ public class Model {
 		return model;
 	}
 
-	public SortedSet<Status> getProperJoinedTimeline() {
-		SortedSet<Status> friendTweets = getFriendTweets();
-		SortedSet<Status> myTweets = getTweets();
-		if (friendTweets != null && myTweets != null) {
-			SortedSet<Status> allTweets = new TreeSet<Status>(statusTimeComparator);
-			allTweets.addAll(friendTweets);
-			allTweets.addAll(myTweets);
-			return allTweets;
-		}
-		return null;
-	}
-
+	/**
+	 * Gets the time line from twitter. It consists of user tweets and followed people tweets
+	 * @return sorted tweets
+	 */
 	public SortedSet<Status> getTweets() {
 		ResponseList<Status> statuses;
 		try {
@@ -87,36 +86,27 @@ public class Model {
 
 	}
 
-	
-	// Not used
-	public SortedSet<Status> getFriendTweets() {
-		try {
-			List<Long> ids = getFriendsIds();
-			SortedSet<Status> sortedStatusSet = new TreeSet<Status>(
-					statusTimeComparator);
-			for (Long id : ids) {
-				ResponseList<Status> statusesList = twitter.getUserTimeline(id);
-				for (Status status : statusesList) {
-					sortedStatusSet.add(status);
-				}
-			}
-			return sortedStatusSet;
-		} catch (TwitterException e) {
-			e.printStackTrace();
-			return null;
-		}
 
-	}
 	
-	public List<User> searchUsers(String query) {
+	/**
+	 * Sends a search users request to Twitter
+	 * @param text to be matched
+	 * @return found list of users
+	 */
+	public List<User> searchUsers(String text) {
 		try {
-			return twitter.searchUsers(query, 1);
+			return twitter.searchUsers(text, 1);
 		} catch (TwitterException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
+	/**
+	 * Sends a follow request to Twitter
+	 * @param user to be followed
+	 * @return new followed user
+	 */
 	public User follow(User user) {
 		try {
 			return twitter.createFriendship(user.getId());
@@ -126,6 +116,10 @@ public class Model {
 		}
 	}
 	
+	/**
+	 * Gets list of followed people
+	 * @return list of followed people
+	 */
 	public List<User> getFriends() {
 		List<User> users= new ArrayList<User>();
 		try {
@@ -138,6 +132,10 @@ public class Model {
 		return users;
 	}
 	
+	/**
+	 * Sends a tweet request to Twitter
+	 * @param text tweet message
+	 */
 	public void sendATweet(String text) {
 		try {
 			twitter.updateStatus(text);

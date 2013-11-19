@@ -1,5 +1,7 @@
 package pl.edu.agh.twitter.view;
 
+import pl.edu.agh.twitter.controller.LoginController;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
@@ -10,8 +12,11 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import controller.LoginController;
-
+/**
+ * 
+ * View with login form. Showed when user is not logged in.
+ *
+ */
 public class LoginView extends VerticalLayout implements View {
 
 	public static final String LOGIN_VIEW_NAME = "login";
@@ -45,14 +50,25 @@ public class LoginView extends VerticalLayout implements View {
 		button.addClickListener(controller);
 	}
 	
+	/**
+	 * Returns login entered by user
+	 * @return login
+	 */
 	public String getLogin() {
 		return loginTextField.getValue();
 	}
 	
+	/**
+	 * Returns password entered by user
+	 * @return password
+	 */
 	public String getPassword () {
 		return passwordTextField.getValue();
 	}
 	
+	/**
+	 * Shows log in failure notification
+	 */
 	public void error() {
 		Notification.show(
 				"Nie udało się zalogować. Spróbuj ponownie",
@@ -61,7 +77,6 @@ public class LoginView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
 
 	}
 

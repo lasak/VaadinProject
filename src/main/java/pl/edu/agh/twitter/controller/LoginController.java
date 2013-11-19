@@ -1,4 +1,4 @@
-package controller;
+package pl.edu.agh.twitter.controller;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -16,6 +16,12 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.UI;
 
+/**
+ * 
+ * Controller connected with login view. Implements ClickListener. 
+ * Handles log in requests.
+ *
+ */
 public class LoginController implements ClickListener{
 	
 	private LoginView loginView;
@@ -24,6 +30,9 @@ public class LoginController implements ClickListener{
 		this.loginView = loginView;
 	}
 
+	/**
+	 * Handles button requests
+	 */
 	@Override
 	public void buttonClick(ClickEvent event) {
 		try {

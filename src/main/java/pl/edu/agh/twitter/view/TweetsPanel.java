@@ -14,10 +14,9 @@ import com.vaadin.ui.Table;
 
 public class TweetsPanel extends Panel {
 	
-
 	private Table twitTable;
-	
 	private Set<Status> twitties;
+	
 	 
 	public TweetsPanel() {
 		
@@ -36,6 +35,9 @@ public class TweetsPanel extends Panel {
 		
 	}
 	
+	/**
+	 * Refreshes content of tweets table.
+	 */
 	public void refreshTable() {
 		
 		twitties = Model.getInstance().getTweets();
