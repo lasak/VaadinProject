@@ -17,7 +17,7 @@ import twitter4j.conf.ConfigurationBuilder;
 /**
  * 
  * Model class responsible for connecting to Twitter and communication with it.
- *
+ * 
  */
 public class Model {
 
@@ -39,8 +39,9 @@ public class Model {
 
 		}
 	};
-	
-	private Model(){}
+
+	private Model() {
+	}
 
 	{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -55,9 +56,10 @@ public class Model {
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
 	}
-	
+
 	/**
 	 * Returns the single instance of {@code Model}
+	 * 
 	 * @return instance of model
 	 */
 	public static Model getInstance() {
@@ -68,7 +70,9 @@ public class Model {
 	}
 
 	/**
-	 * Gets the time line from twitter. It consists of user tweets and followed people tweets
+	 * Gets the time line from twitter. It consists of user tweets and followed
+	 * people tweets
+	 * 
 	 * @return sorted tweets
 	 */
 	public SortedSet<Status> getTweets() {
@@ -88,11 +92,11 @@ public class Model {
 
 	}
 
-
-	
 	/**
 	 * Sends a search users request to Twitter
-	 * @param text to be matched
+	 * 
+	 * @param text
+	 *            to be matched
 	 * @return found list of users
 	 */
 	public List<User> searchUsers(String text) {
@@ -103,10 +107,12 @@ public class Model {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Sends a follow request to Twitter
-	 * @param user to be followed
+	 * 
+	 * @param user
+	 *            to be followed
 	 * @return new followed user
 	 */
 	public User follow(User user) {
@@ -117,13 +123,14 @@ public class Model {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets list of followed people
+	 * 
 	 * @return list of followed people
 	 */
 	public List<User> getFriends() {
-		List<User> users= new ArrayList<User>();
+		List<User> users = new ArrayList<User>();
 		try {
 			for (Long id : getFriendsIds()) {
 				users.add(twitter.showUser(id));
@@ -133,10 +140,12 @@ public class Model {
 		}
 		return users;
 	}
-	
+
 	/**
 	 * Sends a tweet request to Twitter
-	 * @param text tweet message
+	 * 
+	 * @param text
+	 *            tweet message
 	 */
 	public void sendATweet(String text) {
 		try {
@@ -154,7 +163,5 @@ public class Model {
 		}
 		return friendsIDs;
 	}
-	
-
 
 }
