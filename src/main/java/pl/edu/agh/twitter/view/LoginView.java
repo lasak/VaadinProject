@@ -2,6 +2,7 @@ package pl.edu.agh.twitter.view;
 
 import pl.edu.agh.twitter.controller.LoginController;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
@@ -48,6 +49,7 @@ public class LoginView extends VerticalLayout implements View {
 		
 
 		button.addClickListener(controller);
+		button.setClickShortcut(KeyCode.ENTER);
 	}
 	
 	/**

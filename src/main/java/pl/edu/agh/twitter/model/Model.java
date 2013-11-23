@@ -39,6 +39,8 @@ public class Model {
 
 		}
 	};
+	
+	private Model(){}
 
 	{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
