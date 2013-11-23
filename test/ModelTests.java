@@ -3,6 +3,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -57,6 +58,21 @@ public class ModelTests {
 	}
 	
 	@Test
+	public void getFriendsExceptionTest() throws TwitterException {
+		long[] l = {1, 2, 3};
+		IDs iDs = mock(IDs.class);
+		when(iDs.getIDs()).thenReturn(l);
+		when(twitter.getFriendsIDs(anyLong())).thenReturn(iDs);
+		User user1 = mock(User.class);
+		when(twitter.showUser((long)1)).thenReturn(user1);
+		when(twitter.showUser((long)2)).thenThrow(TwitterException.class);
+		when(twitter.showUser((long)3)).thenReturn(mock(User.class));
+		List list = model.getFriends();
+		assertEquals(1, list.size()); //notice that it's not null
+		assertEquals(list.get(0), user1);
+	}
+	
+	@Test
 	public void sendATweetTest() throws TwitterException {
 		model.sendATweet("test");
 		verify(twitter).updateStatus("test");
@@ -101,6 +117,24 @@ public class ModelTests {
 		List list2 = model.searchUsers("test"); //I expect no exception thrown from within
 		verify(twitter).searchUsers(anyString(), anyInt());
 		assertEquals(null, list2);
+	}
+	
+	@Test
+	//Note - serious testing of this method would require knowledge of TreeSet implementation
+	public void getTweetsTest() throws TwitterException {
+		ResponseList list = mock(ResponseList.class);
+		when(list.iterator()).thenReturn(java.util.Collections.emptyListIterator());
+		when(twitter.getHomeTimeline()).thenReturn(list);
+		model.getTweets();
+		verify(twitter).getHomeTimeline();
+	}
+	
+	@Test
+	public void getTweetsExceptionTest() throws TwitterException {
+		when(twitter.getHomeTimeline()).thenThrow(TwitterException.class);
+		SortedSet ss = model.getTweets(); //I expect no exception thrown from within
+		verify(twitter).getHomeTimeline();
+		assertEquals(null, ss);
 	}
 
 }
