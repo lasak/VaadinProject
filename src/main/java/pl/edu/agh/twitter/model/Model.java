@@ -16,7 +16,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * 
- * Model class responsible for connecting to Twitter and communication with it.
+ * Model class responsible for connecting to Twitter and communication with it. Serves as Singleton.
  * 
  */
 public class Model {
