@@ -63,6 +63,7 @@ public class ApplicationController implements ClickListener{
 		else {
 			Model.getInstance().sendATweet(panel.getTextFieldValue().trim());
 			panel.wyslano();
+			applicationView.odswiez();
 		}
 	}
 
@@ -76,6 +77,7 @@ public class ApplicationController implements ClickListener{
 			User user = (User) object;
 			if (Model.getInstance().follow(user) != null) {
 				panel.obserwujesz(user.getName());
+				applicationView.odswiez();
 			}
 			else {
 				panel.nieUdaloSie();

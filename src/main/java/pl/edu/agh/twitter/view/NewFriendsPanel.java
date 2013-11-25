@@ -115,6 +115,8 @@ public class NewFriendsPanel extends Panel {
 	public void obserwujesz(String nazwa) {
 		Notification.show("Obserwujesz: " + nazwa);
 		textField.setValue("");
+		userTable.setVisible(false);
+		userTable.removeAllItems();
 	}
 	
 	/**
